@@ -11,7 +11,13 @@ import SwiftUI
 struct WatchSport_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                HomeView()
+            }
         }
     }
+}
+
+#Preview {
+    HomeView()
 }
