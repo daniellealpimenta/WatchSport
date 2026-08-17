@@ -5,6 +5,7 @@
 //  Created by Daniel Leal PImenta on 17/08/26.
 //
 
+import SwiftData
 import SwiftUI
 
 @main
@@ -15,6 +16,7 @@ struct WatchSport_Watch_AppApp: App {
                 HomeView()
             }
         }
+        .modelContainer(for: [DailyChallenge.self, DailyExercise.self])
     }
 }
 
