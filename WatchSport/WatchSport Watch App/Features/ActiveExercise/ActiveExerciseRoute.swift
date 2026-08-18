@@ -1,22 +1,24 @@
 //
-//  PreExerciseRoute.swift
+//  ActiveExerciseRoute.swift
 //  WatchSport
 //
 
 import SwiftData
 
-struct PreExerciseRoute: Hashable {
+struct ActiveExerciseRoute: Hashable {
     let exerciseID: PersistentIdentifier?
     let exerciseType: ExerciseType
-    let targetAmount: Double
+    let targetRepetitions: Int
 
-    init(
+    init?(
         exerciseID: PersistentIdentifier? = nil,
         exerciseType: ExerciseType,
         targetAmount: Double
     ) {
+        guard exerciseType != .running else { return nil }
+
         self.exerciseID = exerciseID
         self.exerciseType = exerciseType
-        self.targetAmount = targetAmount
+        self.targetRepetitions = max(Int(targetAmount.rounded()), 1)
     }
 }

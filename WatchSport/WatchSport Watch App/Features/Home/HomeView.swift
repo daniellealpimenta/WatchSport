@@ -93,6 +93,7 @@ struct HomeView: View {
                                 guard !exercise.isCompleted else { return }
 
                                 selectedExerciseRoute = PreExerciseRoute(
+                                    exerciseID: exercise.persistentModelID,
                                     exerciseType: exercise.exerciseType,
                                     targetAmount: exercise.targetAmount
                                 )

@@ -4,8 +4,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PreExerciseView: View {
+    @Environment(\.modelContext) private var modelContext
+    @State private var activeExerciseRoute: ActiveExerciseRoute?
+    @State private var isCompleted = false
+
     let viewModel: PreExerciseViewModel
 
     let onStart: () -> Void
@@ -57,15 +62,34 @@ struct PreExerciseView: View {
                         .fixedSize(horizontal: false, vertical: true)
 
                     AppButton(
-                        title: "Iniciar",
+                        title: isCompleted ? "Concluído" : "Iniciar",
                         variant: .gradient,
-                        action: onStart
+                        action: startExercise
                     )
+                    .disabled(isCompleted)
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 8)
             }
         }
+        .navigationDestination(item: $activeExerciseRoute) { route in
+            ActiveExerciseViewBuilder.build(
+                route: route,
+                modelContext: modelContext,
+                onCompleted: {
+                    isCompleted = true
+                }
+            )
+        }
+    }
+
+    private func startExercise() {
+        onStart()
+        activeExerciseRoute = ActiveExerciseRoute(
+            exerciseID: viewModel.exerciseID,
+            exerciseType: viewModel.exerciseType,
+            targetAmount: viewModel.targetAmount
+        )
     }
 }
 
@@ -80,4 +104,5 @@ struct PreExerciseView: View {
             )
         )
     }
+    .modelContainer(for: [DailyChallenge.self, DailyExercise.self], inMemory: true)
 }
