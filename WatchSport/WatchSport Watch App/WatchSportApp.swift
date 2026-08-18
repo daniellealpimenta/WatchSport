@@ -10,16 +10,16 @@ import SwiftUI
 
 @main
 struct WatchSport_Watch_AppApp: App {
+
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                HomeView()
-            }
+            AppRootView()
         }
         .modelContainer(for: [DailyChallenge.self, DailyExercise.self])
     }
 }
 
 #Preview {
-    HomeView()
+    AppRootView()
+        .modelContainer(for: [DailyChallenge.self, DailyExercise.self], inMemory: true)
 }

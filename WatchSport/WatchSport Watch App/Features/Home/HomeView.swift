@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
+    @State var viewModel: HomeViewModel
+    @Query private var dailyChallengeList: [DailyChallenge]
+
     private let difficulty = ChallengeDifficulty.medium
 
     private var targets: [ExerciseTarget] {
@@ -19,6 +23,24 @@ struct HomeView: View {
             Color.backgroundDefault
                 .ignoresSafeArea()
 
+            if viewModel.isLoading {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(Color.brandPurple)
+                    .accessibilityLabel("Carregando desafio diário")
+            } else if viewModel.hasError {
+                ErrorStateView(message: viewModel.errorMessage)
+            } else {
+                content
+            }
+        }
+        .task {
+            viewModel.prepareDailyChallenge(dailyChallengeList: dailyChallengeList)
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
             ScrollView {
                 VStack(spacing: 10) {
                     HStack {
@@ -47,12 +69,21 @@ struct HomeView: View {
                     }
                 }
                 .padding(.horizontal, 8)
-                .padding(.vertical, 10)
+                .padding(.bottom, 8)
             }
-        }
+        
     }
 }
 
 #Preview {
-    HomeView()
+    struct PreviewWithContextWrapper: View {
+        @Environment(\.modelContext) private var context
+
+        var body: some View {
+            HomeViewBuilder.build(context: context)
+        }
+    }
+
+    return PreviewWithContextWrapper()
+        .modelContainer(for: [DailyChallenge.self, DailyExercise.self], inMemory: true)
 }
