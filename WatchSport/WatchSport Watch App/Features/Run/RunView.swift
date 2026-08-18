@@ -65,7 +65,7 @@ struct RunView: View {
                 .tint(Color.brandPurple)
 
             HStack(spacing: 8) {
-                metric(title: "Tempo") {
+                RunMetricTile(title: "Tempo") {
                     if let startDate = viewModel.startDate {
                         Text(
                             timerInterval: startDate...Date.distantFuture,
@@ -77,8 +77,8 @@ struct RunView: View {
                     }
                 }
 
-                metric(title: "Restante") {
-                    Text("\(viewModel.remainingDescription)")
+                RunMetricTile(title: "Restante") {
+                    Text(viewModel.remainingDescription)
                 }
             }
 
@@ -90,28 +90,6 @@ struct RunView: View {
         }
         .padding(.horizontal, 8)
         .accessibilityElement(children: .contain)
-    }
-
-    private func metric<Value: View>(
-        title: String,
-        @ViewBuilder value: () -> Value
-    ) -> some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.system(size: 11, weight: .regular))
-                .foregroundStyle(Color.textSecondary)
-
-            value()
-                .font(.system(size: 15, weight: .bold, design: .rounded))
-                .foregroundStyle(Color.textPrimary)
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-        }
-        .frame(maxWidth: .infinity, minHeight: 44)
-        .background(Color.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .accessibilityElement(children: .combine)
     }
 }
 

@@ -17,19 +17,7 @@ struct ExerciseCompletedView: View {
 
             ScrollView {
                 VStack(spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(Color.backgroundDefault)
-                        .frame(width: 56, height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.brandPurple, .brandBlue],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .clipShape(Circle())
-                        .accessibilityHidden(true)
+                    CompletionBadge()
 
                     VStack(spacing: 2) {
                         Text(viewModel.title)
