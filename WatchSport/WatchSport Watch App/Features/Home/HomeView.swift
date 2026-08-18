@@ -11,12 +11,7 @@ import SwiftData
 struct HomeView: View {
     @State var viewModel: HomeViewModel
     @Query private var dailyChallengeList: [DailyChallenge]
-
-    private let difficulty = ChallengeDifficulty.medium
-
-    private var targets: [ExerciseTarget] {
-        ChallengeTargets.exercises(for: difficulty)
-    }
+    @AppStorage("selectedChallengeDifficulty") private var selectedDifficulty: ChallengeDifficulty = .medium
 
     var body: some View {
         ZStack {
@@ -30,48 +25,87 @@ struct HomeView: View {
                     .accessibilityLabel("Carregando desafio diário")
             } else if viewModel.hasError {
                 ErrorStateView(message: viewModel.errorMessage)
+            } else if let dailyChallenge {
+                content(for: dailyChallenge)
             } else {
-                content
+                ErrorStateView(message: "Não encontramos o desafio de hoje.")
             }
         }
         .task {
-            viewModel.prepareDailyChallenge(dailyChallengeList: dailyChallengeList)
+            viewModel.prepareDailyChallenge(
+                dailyChallengeList: dailyChallengeList,
+                difficulty: selectedDifficulty
+            )
         }
     }
 
-    @ViewBuilder
-    private var content: some View {
-            ScrollView {
-                VStack(spacing: 10) {
-                    HStack {
-                        Text("MISSÃO DIÁRIA")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(Color.textSecondary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
+    private var dailyChallenge: DailyChallenge? {
+        viewModel.dailyChallenge(in: dailyChallengeList)
+    }
 
-                        Spacer()
+    private var streak: Int {
+        viewModel.currentStreak(in: dailyChallengeList)
+    }
 
-                        StreakBadge(dayCount: 7)
-                            .layoutPriority(1)
-                    }
+    private func content(for challenge: DailyChallenge) -> some View {
+        let exercises = sortedExercises(from: challenge)
+        let completedCount = exercises.filter(\.isCompleted).count
 
-                    ProgressRingView(completedCount: 3, totalCount: targets.count)
+        return ScrollView {
+            VStack(spacing: 16) {
+                HStack {
+                    Text("MISSÃO DIÁRIA")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Color.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
 
-                    ForEach(Array(targets.enumerated()), id: \.element.id) { index, target in
+                    Spacer()
+
+                    StreakBadge(dayCount: streak)
+                        .layoutPriority(1)
+                }
+
+                ProgressRingView(
+                    completedCount: completedCount,
+                    totalCount: exercises.count
+                )
+
+                Text("\(challenge.difficulty.displayName) • \(completedCount) de \(exercises.count)")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.textSecondary)
+                    .multilineTextAlignment(.center)
+
+                VStack(spacing: 8) {
+                    ForEach(exercises, id: \.exerciseType) { exercise in
                         ExerciseRowButton(
-                            exerciseType: target.exerciseType,
-                            completedAmount: index == 2 ? 0 : target.amount,
-                            targetAmount: target.amount,
-                            isCompleted: index != 2,
+                            exerciseType: exercise.exerciseType,
+                            completedAmount: exercise.completedAmount ?? 0,
+                            targetAmount: exercise.targetAmount,
+                            isCompleted: exercise.isCompleted,
                             action: {}
                         )
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.bottom, 8)
+
+
+                AppButton(
+                    title: "Alterar nível",
+                    variant: .dark,
+                    action: {}
+                )
             }
-        
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+    }
+
+    private func sortedExercises(from challenge: DailyChallenge) -> [DailyExercise] {
+        challenge.exercises.sorted { lhs, rhs in
+            let lhsIndex = ExerciseType.allCases.firstIndex(of: lhs.exerciseType) ?? 0
+            let rhsIndex = ExerciseType.allCases.firstIndex(of: rhs.exerciseType) ?? 0
+            return lhsIndex < rhsIndex
+        }
     }
 }
 

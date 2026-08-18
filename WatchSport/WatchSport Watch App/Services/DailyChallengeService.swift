@@ -17,6 +17,7 @@ struct DailyChallengeService {
 
     func createDailyChallengeIfNeeded(
         dailyChallengeList: [DailyChallenge],
+        difficulty: ChallengeDifficulty = .medium,
         for date: Date = .now,
         calendar: Calendar = .current
     ) throws {
@@ -26,7 +27,7 @@ struct DailyChallengeService {
             return
         }
 
-        let exercises = ChallengeTargets.exercises(for: .medium).map { target in
+        let exercises = ChallengeTargets.exercises(for: difficulty).map { target in
             DailyExercise(
                 exerciseType: target.exerciseType,
                 targetAmount: target.amount
@@ -35,7 +36,7 @@ struct DailyChallengeService {
 
         let challenge = DailyChallenge(
             day: startOfDay,
-            difficulty: .medium,
+            difficulty: difficulty,
             exercises: exercises
         )
 

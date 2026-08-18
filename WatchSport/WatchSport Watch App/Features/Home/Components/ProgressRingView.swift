@@ -42,7 +42,7 @@ struct ProgressRingView: View {
                     .foregroundStyle(Color.textPrimary)
 
                 Text("CONCLUÍDO")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(Color.textSecondary)
             }
         }
