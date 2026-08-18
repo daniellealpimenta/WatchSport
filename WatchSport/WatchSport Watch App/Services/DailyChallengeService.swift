@@ -6,6 +6,10 @@
 import Foundation
 import SwiftData
 
+enum DailyChallengeServiceError: Error {
+    case exerciseNotFound
+}
+
 @MainActor
 struct DailyChallengeService {
 
@@ -41,6 +45,30 @@ struct DailyChallengeService {
         )
 
         modelContext.insert(challenge)
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            throw error
+        }
+    }
+
+    func completeExercise(
+        with id: PersistentIdentifier,
+        completedAmount: Double,
+        at date: Date = .now
+    ) throws {
+        guard let exercise = modelContext.model(for: id) as? DailyExercise else {
+            throw DailyChallengeServiceError.exerciseNotFound
+        }
+
+        exercise.completedAmount = completedAmount
+        exercise.completedAt = date
+
+        if let challenge = exercise.challenge, challenge.exercises.allSatisfy(\.isCompleted) {
+            challenge.completedAt = date
+        }
 
         do {
             try modelContext.save()
