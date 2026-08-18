@@ -9,8 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext
     @State var viewModel: HomeViewModel
-    @State private var selectedExerciseRoute: PreExerciseRoute?
+    @State private var preExerciseRoute: PreExerciseRoute?
+    @State private var runRoute: RunRoute?
+    @State private var exerciseCompletedRoute: ExerciseCompletedRoute?
     @Query private var dailyChallengeList: [DailyChallenge]
 
     @AppStorage(UserDefaultsKey.selectedChallengeDifficulty)
@@ -40,8 +43,23 @@ struct HomeView: View {
                 difficulty: selectedDifficulty
             )
         }
-        .navigationDestination(item: $selectedExerciseRoute) { route in
-            PreExerciseViewBuilder.build(route: route)
+        .navigationDestination(item: $preExerciseRoute) { route in
+            PreExerciseViewBuilder.build(route: route, onStart: { start(route) })
+        }
+        .navigationDestination(item: $runRoute) { route in
+            RunViewBuilder.build(
+                route: route,
+                context: modelContext,
+                onFinish: { completedMeters in
+                    exerciseCompletedRoute = ExerciseCompletedRoute(
+                        exerciseType: .running,
+                        completedAmount: completedMeters
+                    )
+                }
+            )
+        }
+        .navigationDestination(item: $exerciseCompletedRoute) { route in
+            ExerciseCompletedViewBuilder.build(route: route, onDone: backToChallenge)
         }
     }
 
@@ -92,7 +110,8 @@ struct HomeView: View {
                             action: {
                                 guard !exercise.isCompleted else { return }
 
-                                selectedExerciseRoute = PreExerciseRoute(
+                                preExerciseRoute = PreExerciseRoute(
+                                    exerciseID: exercise.persistentModelID,
                                     exerciseType: exercise.exerciseType,
                                     targetAmount: exercise.targetAmount
                                 )
@@ -111,6 +130,22 @@ struct HomeView: View {
             .padding(.horizontal, 8)
             .padding(.bottom, 8)
         }
+    }
+
+    private func start(_ route: PreExerciseRoute) {
+        // Somente a corrida está implementada; os exercícios de repetição virão depois.
+        guard route.exerciseType == .running else { return }
+
+        runRoute = RunRoute(
+            exerciseID: route.exerciseID,
+            targetMeters: route.targetAmount
+        )
+    }
+
+    private func backToChallenge() {
+        exerciseCompletedRoute = nil
+        runRoute = nil
+        preExerciseRoute = nil
     }
 
     private func sortedExercises(from challenge: DailyChallenge) -> [DailyExercise] {
