@@ -11,7 +11,9 @@ import SwiftData
 struct HomeView: View {
     @State var viewModel: HomeViewModel
     @Query private var dailyChallengeList: [DailyChallenge]
-    @AppStorage("selectedChallengeDifficulty") private var selectedDifficulty: ChallengeDifficulty = .medium
+
+    @AppStorage(UserDefaultsKey.selectedChallengeDifficulty)
+    private var selectedDifficulty: ChallengeDifficulty = .medium
 
     var body: some View {
         ZStack {

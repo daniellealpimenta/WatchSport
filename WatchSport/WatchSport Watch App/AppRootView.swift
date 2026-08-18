@@ -8,10 +8,15 @@ import SwiftUI
 
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
+    @AppStorage(UserDefaultsKey.hasCompletedOnboarding) private var hasCompletedOnboarding = false
 
     var body: some View {
         NavigationStack {
-            HomeViewBuilder.build(context: modelContext)
+            if hasCompletedOnboarding {
+                HomeViewBuilder.build(context: modelContext)
+            } else {
+                OnboardingView()
+            }
         }
     }
 }
