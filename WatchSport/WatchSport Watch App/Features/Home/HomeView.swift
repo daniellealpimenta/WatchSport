@@ -10,6 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel
+    @State private var selectedExerciseRoute: PreExerciseRoute?
     @Query private var dailyChallengeList: [DailyChallenge]
 
     @AppStorage(UserDefaultsKey.selectedChallengeDifficulty)
@@ -38,6 +39,9 @@ struct HomeView: View {
                 dailyChallengeList: dailyChallengeList,
                 difficulty: selectedDifficulty
             )
+        }
+        .navigationDestination(item: $selectedExerciseRoute) { route in
+            PreExerciseViewBuilder.build(route: route)
         }
     }
 
@@ -85,7 +89,14 @@ struct HomeView: View {
                             completedAmount: exercise.completedAmount ?? 0,
                             targetAmount: exercise.targetAmount,
                             isCompleted: exercise.isCompleted,
-                            action: {}
+                            action: {
+                                guard !exercise.isCompleted else { return }
+
+                                selectedExerciseRoute = PreExerciseRoute(
+                                    exerciseType: exercise.exerciseType,
+                                    targetAmount: exercise.targetAmount
+                                )
+                            }
                         )
                     }
                 }

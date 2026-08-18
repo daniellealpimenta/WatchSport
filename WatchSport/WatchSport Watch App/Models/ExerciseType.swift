@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum ExerciseType: String, Codable, CaseIterable {
+enum ExerciseType: String, Codable, CaseIterable, Hashable {
     case pushUp
     case sitUp
     case squat
@@ -17,6 +17,32 @@ enum ExerciseType: String, Codable, CaseIterable {
             .repetitions
         case .running:
             .meters
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .pushUp:
+            "Flexão"
+        case .sitUp:
+            "Abdominal"
+        case .squat:
+            "Agachamento"
+        case .running:
+            "Corrida"
+        }
+    }
+
+    var systemImageName: String {
+        switch self {
+        case .pushUp:
+            "dumbbell.fill"
+        case .sitUp:
+            "figure.core.training"
+        case .squat:
+            "figure.strengthtraining.traditional"
+        case .running:
+            "figure.run"
         }
     }
 }

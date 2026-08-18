@@ -52,12 +52,7 @@ struct ExerciseRowButton: View {
 
 extension ExerciseRowButton {
     private var title: String {
-        switch exerciseType {
-        case .pushUp: "Flexão"
-        case .sitUp: "Abdominal"
-        case .squat: "Agachamento"
-        case .running: "Corrida"
-        }
+        exerciseType.displayName
     }
 
     private var progressDescription: String {
