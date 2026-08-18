@@ -1,0 +1,15 @@
+{
+  "originHash" : "5d2177eda9a1c085e845072453a3ae6f1123607cc6952ceb6141ba6b87f1289b",
+  "pins" : [
+    {
+      "identity" : "exercisespackage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/daniellealpimenta/ExercisesPackage.git",
+      "state" : {
+        "revision" : "3f63403e33c72ab16ec3ccdfefc13731d6252f39",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

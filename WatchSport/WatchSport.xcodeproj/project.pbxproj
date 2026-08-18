@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5506D07C3034D80200A81592 /* ExercisesPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 5506D07B3034D80200A81592 /* ExercisesPackage */; };
 		CD442A433033844500DFE22B /* WatchSport Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = CD442A423033844500DFE22B /* WatchSport Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5506D07C3034D80200A81592 /* ExercisesPackage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +116,7 @@
 			);
 			name = "WatchSport Watch App";
 			packageProductDependencies = (
+				5506D07B3034D80200A81592 /* ExercisesPackage */,
 			);
 			productName = "WatchSport Watch App";
 			productReference = CD442A423033844500DFE22B /* WatchSport Watch App.app */;
@@ -146,6 +149,9 @@
 			);
 			mainGroup = CD442A353033844400DFE22B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5506D07A3034D80200A81592 /* XCRemoteSwiftPackageReference "ExercisesPackage" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CD442A3D3033844500DFE22B /* Products */;
 			projectDirPath = "";
@@ -442,6 +448,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5506D07A3034D80200A81592 /* XCRemoteSwiftPackageReference "ExercisesPackage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daniellealpimenta/ExercisesPackage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5506D07B3034D80200A81592 /* ExercisesPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5506D07A3034D80200A81592 /* XCRemoteSwiftPackageReference "ExercisesPackage" */;
+			productName = ExercisesPackage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CD442A363033844400DFE22B /* Project object */;
 }
