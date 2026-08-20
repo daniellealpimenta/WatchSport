@@ -16,8 +16,11 @@ final class RunViewModel {
 
     private(set) var distanceMeters: Double = 0
     private(set) var startDate: Date?
+    private(set) var countdownValue: Int? = 3
     private(set) var finishedMeters: Double?
     private(set) var errorMessage: String?
+
+    private var hasStarted = false
 
     init(
         exerciseID: PersistentIdentifier,
@@ -49,22 +52,36 @@ final class RunViewModel {
     }
 
     func start() async {
-        guard startDate == nil else { return }
+        guard !hasStarted else { return }
+        hasStarted = true
 
         tracker.onDistanceUpdate = { [weak self] meters in
             self?.updateDistance(meters)
         }
 
         do {
+            for value in stride(from: 3, through: 1, by: -1) {
+                countdownValue = value
+                try await Task.sleep(for: .seconds(1))
+            }
+
+            countdownValue = nil
+
             try await tracker.start()
             startDate = .now
+        } catch is CancellationError {
+            countdownValue = nil
+            hasStarted = false
         } catch {
+            countdownValue = nil
+            hasStarted = false
             errorMessage = (error as? LocalizedError)?.errorDescription
                 ?? "Não foi possível iniciar a corrida."
         }
     }
 
     func stop() {
+        countdownValue = nil
         tracker.onDistanceUpdate = nil
 
         Task { [tracker] in

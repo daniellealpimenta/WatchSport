@@ -18,10 +18,16 @@ struct RunView: View {
 
             if let errorMessage = viewModel.errorMessage {
                 ErrorStateView(message: errorMessage)
+            } else if let countdownValue = viewModel.countdownValue {
+                ExerciseCountdownView(value: countdownValue)
+                    .id(countdownValue)
+                    .transition(ExerciseCountdownView.transition)
             } else {
                 content
+                    .transition(.opacity)
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.countdownValue)
         .navigationBarBackButtonHidden(viewModel.finishedMeters != nil)
         .task {
             await viewModel.start()
