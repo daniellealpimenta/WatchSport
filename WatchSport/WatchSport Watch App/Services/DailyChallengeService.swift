@@ -77,4 +77,47 @@ struct DailyChallengeService {
             throw error
         }
     }
+
+    func changeDifficulty(
+        to difficulty: ChallengeDifficulty,
+        dailyChallengeList: [DailyChallenge],
+        for date: Date = .now,
+        calendar: Calendar = .current
+    ) throws {
+        let startOfDay = calendar.startOfDay(for: date)
+
+        guard let challenge = dailyChallengeList.first(where: {
+            calendar.isDate($0.day, inSameDayAs: startOfDay)
+        }) else {
+            try createDailyChallengeIfNeeded(
+                dailyChallengeList: dailyChallengeList,
+                difficulty: difficulty,
+                for: date,
+                calendar: calendar
+            )
+            return
+        }
+
+        guard challenge.difficulty != difficulty else { return }
+
+        let previousExercises = challenge.exercises
+        let newExercises = ChallengeTargets.exercises(for: difficulty).map { target in
+            DailyExercise(
+                exerciseType: target.exerciseType,
+                targetAmount: target.amount
+            )
+        }
+
+        challenge.difficulty = difficulty
+        challenge.completedAt = nil
+        challenge.exercises = newExercises
+        previousExercises.forEach(modelContext.delete)
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            throw error
+        }
+    }
 }

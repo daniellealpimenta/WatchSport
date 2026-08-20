@@ -14,6 +14,7 @@ struct HomeView: View {
     @State private var preExerciseRoute: PreExerciseRoute?
     @State private var runRoute: RunRoute?
     @State private var exerciseCompletedRoute: ExerciseCompletedRoute?
+    @State private var isChangingDifficulty = false
     @Query private var dailyChallengeList: [DailyChallenge]
 
     @AppStorage(UserDefaultsKey.selectedChallengeDifficulty)
@@ -60,6 +61,12 @@ struct HomeView: View {
         }
         .navigationDestination(item: $exerciseCompletedRoute) { route in
             ExerciseCompletedViewBuilder.build(route: route, onDone: backToChallenge)
+        }
+        .navigationDestination(isPresented: $isChangingDifficulty) {
+            ChangeDifficultyViewBuilder.build(
+                context: modelContext,
+                selectedDifficulty: selectedDifficulty
+            )
         }
     }
 
@@ -124,7 +131,9 @@ struct HomeView: View {
                 AppButton(
                     title: "Alterar nível",
                     variant: .dark,
-                    action: {}
+                    action: {
+                        isChangingDifficulty = true
+                    }
                 )
             }
             .padding(.horizontal, 8)
