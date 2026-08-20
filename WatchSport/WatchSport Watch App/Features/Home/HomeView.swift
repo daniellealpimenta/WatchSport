@@ -9,8 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext
     @State var viewModel: HomeViewModel
     @State private var selectedExerciseRoute: PreExerciseRoute?
+    @State private var isChangingDifficulty = false
     @Query private var dailyChallengeList: [DailyChallenge]
 
     @AppStorage(UserDefaultsKey.selectedChallengeDifficulty)
@@ -42,6 +44,12 @@ struct HomeView: View {
         }
         .navigationDestination(item: $selectedExerciseRoute) { route in
             PreExerciseViewBuilder.build(route: route)
+        }
+        .navigationDestination(isPresented: $isChangingDifficulty) {
+            ChangeDifficultyViewBuilder.build(
+                context: modelContext,
+                selectedDifficulty: selectedDifficulty
+            )
         }
     }
 
@@ -106,7 +114,9 @@ struct HomeView: View {
                 AppButton(
                     title: "Alterar nível",
                     variant: .dark,
-                    action: {}
+                    action: {
+                        isChangingDifficulty = true
+                    }
                 )
             }
             .padding(.horizontal, 8)
