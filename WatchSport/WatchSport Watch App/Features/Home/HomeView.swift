@@ -14,6 +14,7 @@ struct HomeView: View {
     @State private var preExerciseRoute: PreExerciseRoute?
     @State private var runRoute: RunRoute?
     @State private var exerciseCompletedRoute: ExerciseCompletedRoute?
+    @State private var missionCompletedRoute: MissionCompletedRoute?
     @State private var isChangingDifficulty = false
     @Query private var dailyChallengeList: [DailyChallenge]
 
@@ -56,11 +57,15 @@ struct HomeView: View {
                         exerciseType: .running,
                         completedAmount: completedMeters
                     )
-                }
+                },
+                onCancel: backToChallenge
             )
         }
         .navigationDestination(item: $exerciseCompletedRoute) { route in
-            ExerciseCompletedViewBuilder.build(route: route, onDone: backToChallenge)
+            ExerciseCompletedViewBuilder.build(route: route, onDone: finishExercise)
+        }
+        .navigationDestination(item: $missionCompletedRoute) { route in
+            MissionCompletedViewBuilder.build(route: route, onDone: backToChallenge)
         }
         .navigationDestination(isPresented: $isChangingDifficulty) {
             ChangeDifficultyViewBuilder.build(
@@ -151,7 +156,27 @@ struct HomeView: View {
         )
     }
 
+    /// Sai da tela de exercício concluído. Se o exercício fechou a missão do dia,
+    /// empilha o resumo final antes de voltar para a Home.
+    private func finishExercise() {
+        guard let challenge = dailyChallenge, challenge.isCompleted else {
+            backToChallenge()
+            return
+        }
+
+        missionCompletedRoute = MissionCompletedRoute(
+            summary: sortedExercises(from: challenge).map { exercise in
+                ExerciseSummary(
+                    exerciseType: exercise.exerciseType,
+                    completedAmount: exercise.completedAmount ?? exercise.targetAmount
+                )
+            },
+            streakDays: streak
+        )
+    }
+
     private func backToChallenge() {
+        missionCompletedRoute = nil
         exerciseCompletedRoute = nil
         runRoute = nil
         preExerciseRoute = nil

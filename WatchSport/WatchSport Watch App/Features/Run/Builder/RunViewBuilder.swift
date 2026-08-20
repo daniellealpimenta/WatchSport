@@ -11,7 +11,8 @@ enum RunViewBuilder {
     static func build(
         route: RunRoute,
         context: ModelContext,
-        onFinish: @escaping (Double) -> Void = { _ in }
+        onFinish: @escaping (Double) -> Void = { _ in },
+        onCancel: @escaping () -> Void = {}
     ) -> RunView {
         #if targetEnvironment(simulator)
         let tracker: RunTracking = SimulatedRunTracking()
@@ -26,6 +27,6 @@ enum RunViewBuilder {
             dailyChallengeService: DailyChallengeService(modelContext: context)
         )
 
-        return RunView(viewModel: viewModel, onFinish: onFinish)
+        return RunView(viewModel: viewModel, onFinish: onFinish, onCancel: onCancel)
     }
 }

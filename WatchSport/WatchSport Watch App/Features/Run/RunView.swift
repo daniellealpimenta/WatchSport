@@ -10,13 +10,20 @@ struct RunView: View {
     @State var viewModel: RunViewModel
 
     let onFinish: (Double) -> Void
+    let onCancel: () -> Void
 
     var body: some View {
         ZStack {
             Color.backgroundDefault
                 .ignoresSafeArea()
 
-            if let errorMessage = viewModel.errorMessage {
+            if let missingPermission = viewModel.missingPermission {
+                PermissionViewBuilder.build(
+                    kind: missingPermission,
+                    onRetry: { Task { await viewModel.retry() } },
+                    onDismiss: onCancel
+                )
+            } else if let errorMessage = viewModel.errorMessage {
                 ErrorStateView(message: errorMessage)
             } else if let countdownValue = viewModel.countdownValue {
                 ExerciseCountdownView(value: countdownValue)

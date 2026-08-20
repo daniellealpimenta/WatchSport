@@ -19,6 +19,7 @@ final class RunViewModel {
     private(set) var countdownValue: Int? = 3
     private(set) var finishedMeters: Double?
     private(set) var errorMessage: String?
+    private(set) var missingPermission: PermissionKind?
 
     private var hasStarted = false
 
@@ -72,12 +73,23 @@ final class RunViewModel {
         } catch is CancellationError {
             countdownValue = nil
             hasStarted = false
+        } catch RunTrackingError.authorizationDenied {
+            countdownValue = nil
+            hasStarted = false
+            missingPermission = .health
         } catch {
             countdownValue = nil
             hasStarted = false
             errorMessage = (error as? LocalizedError)?.errorDescription
                 ?? "Não foi possível iniciar a corrida."
         }
+    }
+
+    /// Refaz o pedido de autorização depois que o usuário liberou o acesso no iPhone.
+    func retry() async {
+        missingPermission = nil
+        errorMessage = nil
+        await start()
     }
 
     func stop() {
