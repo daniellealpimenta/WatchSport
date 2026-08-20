@@ -18,6 +18,11 @@ enum ExerciseAmountFormatter {
         return formattedMeters(meters) + " m"
     }
 
+    /// Distância em quilômetros com duas casas, para a tela de corrida.
+    static func kilometers(_ meters: Double) -> String {
+        (meters / 1_000).formatted(.number.precision(.fractionLength(2)))
+    }
+
     static func distanceProgress(completedMeters: Double, targetMeters: Double) -> String {
         if targetMeters >= 1_000 {
             return "\(formattedKilometers(completedMeters)) de \(formattedKilometers(targetMeters)) km"

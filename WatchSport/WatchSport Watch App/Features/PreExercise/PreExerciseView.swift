@@ -3,8 +3,8 @@
 //  WatchSport
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct PreExerciseView: View {
     @Environment(\.modelContext) private var modelContext
@@ -99,6 +99,7 @@ struct PreExerciseView: View {
     NavigationStack {
         PreExerciseViewBuilder.build(
             route: PreExerciseRoute(
+                exerciseID: DailyExercise(exerciseType: .squat, targetAmount: 20).persistentModelID,
                 exerciseType: .squat,
                 targetAmount: 20
             )
