@@ -56,7 +56,8 @@ struct HomeView: View {
                         exerciseType: .running,
                         completedAmount: completedMeters
                     )
-                }
+                },
+                onCancel: backToChallenge
             )
         }
         .navigationDestination(item: $exerciseCompletedRoute) { route in

@@ -29,6 +29,13 @@ final class HealthKitRunTracking: NSObject, RunTracking {
             throw RunTrackingError.authorizationDenied
         }
 
+        // O HealthKit não expõe o status de leitura por privacidade, e negar leitura não
+        // lança erro. A negativa observável é a de escrita do treino — e sem ela a sessão
+        // não inicia de qualquer forma.
+        guard healthStore.authorizationStatus(for: .workoutType()) == .sharingAuthorized else {
+            throw RunTrackingError.authorizationDenied
+        }
+
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = .running
         configuration.locationType = .outdoor
