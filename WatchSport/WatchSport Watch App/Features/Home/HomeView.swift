@@ -13,6 +13,7 @@ struct HomeView: View {
     @State var viewModel: HomeViewModel
     @State private var preExerciseRoute: PreExerciseRoute?
     @State private var runRoute: RunRoute?
+    @State private var activeExerciseRoute: ActiveExerciseRoute?
     @State private var exerciseCompletedRoute: ExerciseCompletedRoute?
     @State private var missionCompletedRoute: MissionCompletedRoute?
     @State private var isChangingDifficulty = false
@@ -59,6 +60,18 @@ struct HomeView: View {
                     )
                 },
                 onCancel: backToChallenge
+            )
+        }
+        .navigationDestination(item: $activeExerciseRoute) { route in
+            ActiveExerciseViewBuilder.build(
+                route: route,
+                modelContext: modelContext,
+                onCompleted: { completedRepetitions in
+                    exerciseCompletedRoute = ExerciseCompletedRoute(
+                        exerciseType: route.exerciseType,
+                        completedAmount: completedRepetitions
+                    )
+                }
             )
         }
         .navigationDestination(item: $exerciseCompletedRoute) { route in
@@ -146,13 +159,21 @@ struct HomeView: View {
         }
     }
 
+    /// A corrida tem rastreamento próprio pelo HealthKit; os demais exercícios
+    /// contam repetições pelos sensores de movimento.
     private func start(_ route: PreExerciseRoute) {
-        // Somente a corrida está implementada; os exercícios de repetição virão depois.
-        guard route.exerciseType == .running else { return }
+        guard route.exerciseType != .running else {
+            runRoute = RunRoute(
+                exerciseID: route.exerciseID,
+                targetMeters: route.targetAmount
+            )
+            return
+        }
 
-        runRoute = RunRoute(
+        activeExerciseRoute = ActiveExerciseRoute(
             exerciseID: route.exerciseID,
-            targetMeters: route.targetAmount
+            exerciseType: route.exerciseType,
+            targetAmount: route.targetAmount
         )
     }
 
@@ -178,6 +199,7 @@ struct HomeView: View {
     private func backToChallenge() {
         missionCompletedRoute = nil
         exerciseCompletedRoute = nil
+        activeExerciseRoute = nil
         runRoute = nil
         preExerciseRoute = nil
     }

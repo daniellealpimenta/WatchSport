@@ -9,6 +9,8 @@ import SwiftData
 struct ActiveExerciseView: View {
     @State var viewModel: ActiveExerciseViewModel
 
+    let onCompleted: (Double) -> Void
+
     var body: some View {
         ZStack {
             Color.backgroundDefault
@@ -32,6 +34,10 @@ struct ActiveExerciseView: View {
         }
         .onDisappear {
             viewModel.stop()
+        }
+        .onChange(of: viewModel.isCompleted) { _, isCompleted in
+            guard isCompleted else { return }
+            onCompleted(Double(viewModel.completedRepetitions))
         }
     }
 }

@@ -3,19 +3,14 @@
 //  WatchSport
 //
 
-import SwiftData
-
 struct PreExerciseViewModel {
-    let exerciseID: PersistentIdentifier?
     let exerciseType: ExerciseType
     let targetAmount: Double
 
     init(
-        exerciseID: PersistentIdentifier?,
         exerciseType: ExerciseType,
         targetAmount: Double
     ) {
-        self.exerciseID = exerciseID
         self.exerciseType = exerciseType
         self.targetAmount = targetAmount
     }

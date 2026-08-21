@@ -7,10 +7,6 @@ import SwiftData
 import SwiftUI
 
 struct PreExerciseView: View {
-    @Environment(\.modelContext) private var modelContext
-    @State private var activeExerciseRoute: ActiveExerciseRoute?
-    @State private var isCompleted = false
-
     let viewModel: PreExerciseViewModel
 
     let onStart: () -> Void
@@ -62,34 +58,15 @@ struct PreExerciseView: View {
                         .fixedSize(horizontal: false, vertical: true)
 
                     AppButton(
-                        title: isCompleted ? "Concluído" : "Iniciar",
+                        title: "Iniciar",
                         variant: .gradient,
-                        action: startExercise
+                        action: onStart
                     )
-                    .disabled(isCompleted)
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 8)
             }
         }
-        .navigationDestination(item: $activeExerciseRoute) { route in
-            ActiveExerciseViewBuilder.build(
-                route: route,
-                modelContext: modelContext,
-                onCompleted: {
-                    isCompleted = true
-                }
-            )
-        }
-    }
-
-    private func startExercise() {
-        onStart()
-        activeExerciseRoute = ActiveExerciseRoute(
-            exerciseID: viewModel.exerciseID,
-            exerciseType: viewModel.exerciseType,
-            targetAmount: viewModel.targetAmount
-        )
     }
 }
 
