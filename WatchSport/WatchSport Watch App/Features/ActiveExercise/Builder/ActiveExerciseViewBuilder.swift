@@ -10,27 +10,23 @@ enum ActiveExerciseViewBuilder {
     static func build(
         route: ActiveExerciseRoute,
         modelContext: ModelContext,
-        onCompleted: @escaping () -> Void = {}
+        onCompleted: @escaping (Double) -> Void = { _ in }
     ) -> ActiveExerciseView {
-        let completionService = ExerciseCompletionService(
-            modelContext: modelContext
-        )
+        let dailyChallengeService = DailyChallengeService(modelContext: modelContext)
 
         let viewModel = ActiveExerciseViewModel(
             exerciseType: route.exerciseType,
             targetRepetitions: route.targetRepetitions,
             onGoalReached: { completedRepetitions in
-                if let exerciseID = route.exerciseID {
-                    try completionService.complete(
-                        exerciseID: exerciseID,
-                        completedAmount: Double(completedRepetitions)
-                    )
-                }
+                guard let exerciseID = route.exerciseID else { return }
 
-                onCompleted()
+                try dailyChallengeService.completeExercise(
+                    with: exerciseID,
+                    completedAmount: Double(completedRepetitions)
+                )
             }
         )
 
-        return ActiveExerciseView(viewModel: viewModel)
+        return ActiveExerciseView(viewModel: viewModel, onCompleted: onCompleted)
     }
 }

@@ -63,6 +63,9 @@ struct DailyChallengeService {
             throw DailyChallengeServiceError.exerciseNotFound
         }
 
+        // O tracker de repetições pode emitir a meta mais de uma vez antes de parar.
+        guard !exercise.isCompleted else { return }
+
         exercise.completedAmount = completedAmount
         exercise.completedAt = date
 
